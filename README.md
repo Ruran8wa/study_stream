@@ -4,7 +4,7 @@
 StudyStream is a video platform built to help students, teachers, and researchers find high-quality educational content without distractions. Unlike YouTube, where educational videos are mixed with entertainment and other content, StudyStream is focused entirely on learning materials.
 
 ## The Problem We're Solving
-Many students struggle to find the right educational videos because they are buried under a flood of unrelated content. According to a 2023 UNESCO report, **40% of students in Sub-Saharan Africa** don’t have access to properly curated online learning resources. StudyStream solves this by offering a dedicated space for educational videos, making learning faster and more efficient.
+Many students find it hard to get the right educational videos because there are too many unrelated ones. A **2023 UNESCO report** says that **40% of students in Sub-Saharan Africa** do not have access to well-organized online learning resources. StudyStream solves this by providing a platform with only educational videos, making learning quicker and easier.
 
 ## Who It's For
 StudyStream is designed for:
