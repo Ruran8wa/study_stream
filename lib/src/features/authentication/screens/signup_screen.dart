@@ -2,8 +2,16 @@
 
 import 'package:flutter/material.dart';
 import '../../../../services/auth_service.dart'; // Corrected import path
+<<<<<<< HEAD
 import 'package:study_stream/src/features/authentication/screens/login_screen.dart'; // Corrected import path
+<<<<<<< HEAD
 import 'package:study_stream/src/features/authentication/screens/home_screen.dart';
+=======
+=======
+import 'login_screen.dart';
+>>>>>>> 9f8e645 (Initialize auth_repository package with Firebase and authentication on signup and login.)
+import 'home_screen.dart';
+>>>>>>> 1a0ed14 (Initialize auth_repository package with Firebase and authentication on signup and login.)
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -40,13 +48,29 @@ class _SignupScreenState extends State<SignupScreen> {
           _passwordController.text.trim(),
           _nameController.text.trim(), // Add the name here
         );
+<<<<<<< HEAD
         // Navigate to the next screen (e.g., home screen) after successful sign-up
+=======
+<<<<<<< HEAD
+        // Navigate to the login screen after successful sign-up
+=======
+        // Navigate to the next screen (e.g., home screen) after successful sign-up
+>>>>>>> 9f8e645 (Initialize auth_repository package with Firebase and authentication on signup and login.)
+>>>>>>> 1a0ed14 (Initialize auth_repository package with Firebase and authentication on signup and login.)
         print('User signed up successfully!');
         if (mounted) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
+<<<<<<< HEAD
               builder: (context) =>
                   const LoginScreen(), // Navigate to LoginScreen
+=======
+<<<<<<< HEAD
+              builder: (context) => const LoginScreen(), // Navigate to LoginScreen
+=======
+              builder: (context) => const HomeScreen(),
+>>>>>>> 9f8e645 (Initialize auth_repository package with Firebase and authentication on signup and login.)
+>>>>>>> 1a0ed14 (Initialize auth_repository package with Firebase and authentication on signup and login.)
             ),
           );
         }
