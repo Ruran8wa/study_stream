@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "597879774277",
+    "project_id": "study-stream-ff55c",
+    "storage_bucket": "study-stream-ff55c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:597879774277:android:fefee475603dd39ebd172c",
+        "android_client_info": {
+          "package_name": "com.Study_stream1.com"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "597879774277-86a95r64llj74k5lf2c000seo4lfg74r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCY_RPhaEIg-7RU7Ziiju_5dgruR5hcdTw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "597879774277-86a95r64llj74k5lf2c000seo4lfg74r.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "597879774277-nu6rgdoqbkqmjiak59edl4ap448iibh6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "Studystream"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:597879774277:android:901360e3bdb9dc47bd172c",
+        "android_client_info": {
+          "package_name": "com.example.study_stream"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "597879774277-86a95r64llj74k5lf2c000seo4lfg74r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCY_RPhaEIg-7RU7Ziiju_5dgruR5hcdTw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "597879774277-86a95r64llj74k5lf2c000seo4lfg74r.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "597879774277-nu6rgdoqbkqmjiak59edl4ap448iibh6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "Studystream"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
