@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:study_stream/src/features/authentication/screens/courses.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -34,7 +35,7 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   _buildVideoThumbnails(),
                   const SizedBox(height: 16),
-                  _buildCategoryButtons(),
+                  _buildCategoryButtons(context),
                   const SizedBox(height: 24),
                   _buildPopularTutorialsHeader(),
                   const SizedBox(height: 16),
@@ -124,21 +125,31 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildVideoThumbnails() {
+    // Add context parameter here
     return SizedBox(
       height: 150,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
+          _buildVideoThumbnail('assets/images/tut1.jpeg',
+              'Doctor Consultation'), // Pass context as first parameter
           _buildVideoThumbnail(
-              'assets/images/tut1.jpeg', 'Doctor Consultation'),
-          _buildVideoThumbnail('assets/images/tut2.jpeg', 'Surgery Procedure'),
-          _buildVideoThumbnail('assets/images/tut3.jpeg', 'Dental Procedure'),
+            'assets/images/tut2.jpeg',
+            'Surgery Procedure',
+          ), // Pass context as first parameter
+          _buildVideoThumbnail(
+            'assets/images/tut3.jpeg',
+            'Dental Procedure',
+          ), // Pass context as first parameter
         ],
       ),
     );
   }
 
-  Widget _buildVideoThumbnail(String imagePath, String title) {
+  Widget _buildVideoThumbnail(
+    String imagePath,
+    String title,
+  ) {
     return Container(
       width: 120,
       margin: const EdgeInsets.only(right: 12),
@@ -185,32 +196,39 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryButtons() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        _buildCategoryButton(
-          color: Colors.blue,
-          icon: Icons.medical_services,
-          label: 'Dental',
-        ),
-        _buildCategoryButton(
-          color: Colors.green,
-          icon: Icons.favorite,
-          label: 'Cardio',
-        ),
-        _buildCategoryButton(
-          color: Colors.orange,
-          icon: Icons.remove_red_eye,
-          label: 'Optical',
-        ),
-        _buildCategoryButton(
-          color: Colors.red,
-          icon: Icons.accessibility_new,
-          label: 'Ortho',
-        ),
-      ],
-    );
+  Widget _buildCategoryButtons(BuildContext context) {
+    return GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const CoursesScreen()),
+          );
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            _buildCategoryButton(
+              color: Colors.blue,
+              icon: Icons.medical_services,
+              label: 'Dental',
+            ),
+            _buildCategoryButton(
+              color: Colors.green,
+              icon: Icons.favorite,
+              label: 'Cardio',
+            ),
+            _buildCategoryButton(
+              color: Colors.orange,
+              icon: Icons.remove_red_eye,
+              label: 'Optical',
+            ),
+            _buildCategoryButton(
+              color: Colors.red,
+              icon: Icons.accessibility_new,
+              label: 'Ortho',
+            ),
+          ],
+        ));
   }
 
   Widget _buildCategoryButton({
