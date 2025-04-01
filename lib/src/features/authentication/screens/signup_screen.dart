@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../services/auth_service.dart'; // Corrected import path
-import 'login_screen.dart';
+import 'package:study_stream/src/features/authentication/screens/login_screen.dart'; // Corrected import path
 import 'home_screen.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -37,12 +37,12 @@ class _SignupScreenState extends State<SignupScreen> {
           _passwordController.text.trim(),
           _nameController.text.trim(), // Add the name here
         );
-        // Navigate to the next screen (e.g., home screen) after successful sign-up
+        // Navigate to the login screen after successful sign-up
         print('User signed up successfully!');
         if (mounted) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => const HomeScreen(),
+              builder: (context) => const LoginScreen(), // Navigate to LoginScreen
             ),
           );
         }
@@ -50,8 +50,12 @@ class _SignupScreenState extends State<SignupScreen> {
         // Handle errors, e.g., show a snackbar with the error message
         print('Error during sign-up: $e');
         if (mounted) {
+          String errorMessage = 'Failed to sign up.';
+          if (e is Exception && e.toString().contains('The email address is already in use')) {
+            errorMessage = 'This email is already in use.';
+          }
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to sign up: $e')),
+            SnackBar(content: Text(errorMessage)),
           );
         }
       }
