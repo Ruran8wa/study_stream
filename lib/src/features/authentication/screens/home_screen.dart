@@ -1,11 +1,76 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:study_stream/src/features/authentication/screens/programming_screen.dart';
 import 'package:study_stream/src/features/authentication/screens/business_screen.dart';
 import 'package:study_stream/src/features/authentication/screens/statistics_screen.dart';
 import 'package:study_stream/src/features/authentication/screens/time_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  HomeScreenState createState() => HomeScreenState();
+}
+
+class HomeScreenState extends State<HomeScreen> {
+  final List<Map<String, String>> _videos = [
+    {
+      "title": "Flutter Tutorial",
+      "url": "https://www.youtube.com/watch?v=1ukSR1GRtMU"
+    },
+    {
+      "title": "Dart Basics",
+      "url": "https://www.youtube.com/watch?v=Ej_Pcr4uC2Q"
+    },
+    {
+      "title": "Machine Learning Intro",
+      "url": "https://www.youtube.com/watch?v=Gv9_4yMHFhI"
+    },
+  ];
+
+  List<Map<String, String>> _filteredVideos = [];
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredVideos = List.from(_videos);
+  }
+
+  void _searchVideos(String query) {
+    setState(() {
+      _filteredVideos = _videos
+          .where((video) =>
+              video["title"]!.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
+  void _clearSearch() {
+    _searchController.clear();
+    _searchVideos('');
+  }
+
+  // Fetching YouTube video thumbnail
+  Future<String> _getVideoThumbnail(String url) async {
+    try {
+      var yt = YoutubeExplode();
+      var videoId = url.split('v=')[1].split('&')[0]; // Extract video ID
+      var video = await yt.videos.get(VideoId(videoId)); // Get video details
+      return video.thumbnails.highResUrl; // Return the high-res thumbnail
+    } catch (e) {
+      print('Error fetching thumbnail: $e');
+      return ''; // Return empty string in case of error
+    }
+  }
+
+  Future<void> _openVideo(String url) async {
+    final Uri _url = Uri.parse(url);
+    if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $_url');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,13 +101,9 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   _buildSectionTitle('Top Tutorials'),
                   const SizedBox(height: 16),
-                  _buildVideoThumbnails(),
+                  _buildVideoList(),
                   const SizedBox(height: 16),
                   _buildCategoryButtons(context),
-                  const SizedBox(height: 24),
-                  _buildPopularTutorialsHeader(),
-                  const SizedBox(height: 16),
-                  _buildPopularTutorials(),
                 ],
               ),
             ),
@@ -80,7 +141,7 @@ class HomeScreen extends StatelessWidget {
         CircleAvatar(
           radius: 24,
           backgroundImage: NetworkImage(
-            'https://randomuser.me/api/portraits/women/44.jpg',
+            'https://randomuser.me/api/portraits/women/mosh.jpeg',
           ),
         ),
       ],
@@ -98,18 +159,20 @@ class HomeScreen extends StatelessWidget {
         children: [
           const Icon(Icons.search, color: Colors.grey),
           const SizedBox(width: 8),
-          const Expanded(
+          Expanded(
             child: TextField(
-              decoration: InputDecoration(
+              controller: _searchController,
+              decoration: const InputDecoration(
                 hintText: 'Search...',
                 border: InputBorder.none,
                 hintStyle: TextStyle(color: Colors.grey),
               ),
+              onChanged: _searchVideos,
             ),
           ),
           IconButton(
             icon: const Icon(Icons.close, color: Colors.grey),
-            onPressed: () {},
+            onPressed: _clearSearch,
           ),
         ],
       ),
@@ -127,75 +190,67 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildVideoThumbnails() {
-    // Add context parameter here
-    return SizedBox(
-      height: 150,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: [
-          _buildVideoThumbnail('assets/images/tut1.jpeg',
-              'Doctor Consultation'), // Pass context as first parameter
-          _buildVideoThumbnail(
-            'assets/images/tut2.jpeg',
-            'Surgery Procedure',
-          ), // Pass context as first parameter
-          _buildVideoThumbnail(
-            'assets/images/tut3.jpeg',
-            'Dental Procedure',
-          ), // Pass context as first parameter
-        ],
-      ),
-    );
-  }
+  Widget _buildVideoList() {
+    return ListView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _filteredVideos.length,
+      itemBuilder: (context, index) {
+        return FutureBuilder<String>(
+          future: _getVideoThumbnail(_filteredVideos[index]["url"]!),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-  Widget _buildVideoThumbnail(
-    String imagePath,
-    String title,
-  ) {
-    return Container(
-      width: 120,
-      margin: const EdgeInsets.only(right: 12),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        image: DecorationImage(
-          image: AssetImage(imagePath),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Stack(
-        children: [
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
+            if (!snapshot.hasData) {
+              return const ListTile(
+                title: Text('Error loading thumbnail'),
+              );
+            }
+
+            return Card(
+              elevation: 5,
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                gradient: const LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black,
-                  ],
+              ),
+              child: ListTile(
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                leading: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    snapshot.data!,
+                    width: 60, // Set a fixed width
+                    height: 60, // Set a fixed height
+                    fit: BoxFit.cover, // Ensure the image fits within the box
+                  ),
                 ),
+                title: Text(
+                  _filteredVideos[index]["title"]!,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                subtitle: const Text(
+                  'Tap to watch',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey,
+                  ),
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.open_in_new, color: Colors.blue),
+                  onPressed: () => _openVideo(_filteredVideos[index]["url"]!),
+                ),
+                onTap: () => _openVideo(_filteredVideos[index]["url"]!),
               ),
-            ),
-          ),
-          Center(
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.play_arrow,
-                color: Colors.red,
-                size: 24,
-              ),
-            ),
-          ),
-        ],
-      ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -289,110 +344,6 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildPopularTutorialsHeader() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _buildSectionTitle('Popular Tutorials'),
-        TextButton(
-          onPressed: () {},
-          child: const Row(
-            children: [
-              Text(
-                'See all',
-                style: TextStyle(color: Colors.grey),
-              ),
-              Icon(
-                Icons.chevron_right,
-                color: Colors.grey,
-                size: 16,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPopularTutorials() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildPopularTutorialCard(
-            'assets/images/mosh.jpeg',
-            'Mosh',
-            'Programming Trainer',
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _buildPopularTutorialCard(
-            'assets/images/KyleCook.webp',
-            'Kyle',
-            'Web simplified',
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPopularTutorialCard(
-      String imagePath, String name, String speciality) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black,
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(12),
-              topRight: Radius.circular(12),
-            ),
-            child: Image.asset(
-              imagePath,
-              width: double.infinity,
-              height: 120,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  speciality,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
