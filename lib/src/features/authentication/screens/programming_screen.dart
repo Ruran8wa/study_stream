@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:study_stream/src/features/authentication/screens/upload_course_screen.dart'; // Import the new screen
 
 class ProgrammingScreen extends StatelessWidget {
   const ProgrammingScreen({Key? key}) : super(key: key);
+
+  // New method to extract video ID without extra parameters
+  String? extractVideoId(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return null;
+    if (uri.host != 'www.youtube.com' && uri.host != 'youtube.com') return null;
+    final videoId = uri.queryParameters['v'];
+    return videoId;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +60,15 @@ class ProgrammingScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // Navigate to the UploadCourseScreen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const UploadCourseScreen(),
+                        ),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                       foregroundColor: const Color.fromARGB(255, 211, 47, 47),
@@ -65,37 +83,51 @@ class ProgrammingScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Expanded(
-                child: GridView.count(
-                  crossAxisCount: 3,
-                  childAspectRatio: 0.9,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
-                  children: [
-                    _buildCourseCard(
-                        context,
-                        'Python for Beginners - Learn Python in 1 Hour',
-                        'https://www.youtube.com/watch?v=kqtD5dpn9C8',
-                        'Development',
-                        '1 Video',
-                        4,
-                        '1:00:15'),
-                    _buildCourseCard(
-                        context,
-                        'Learn JavaScript: Full Course for Beginners',
-                        'https://www.youtube.com/watch?v=PkZNo7MFNFg',
-                        'Development',
-                        '1 Video',
-                        4,
-                        '3:26:43'),
-                    _buildCourseCard(
-                        context,
-                        'Learn HTML: Full Tutorial for Beginners',
-                        'https://www.youtube.com/watch?v=pQN-pnXPaVg',
-                        'Development',
-                        '1 Video',
-                        8,
-                        '2:19:37'),
-                  ],
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.3,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
+                  ),
+                  itemCount: 3,
+                  itemBuilder: (context, index) {
+                    final List<Map<String, dynamic>> courses = [
+                      {
+                        'title': 'Python for Beginners - Learn Python in 1 Hour',
+                        'youtubeUrl': 'https://www.youtube.com/watch?v=kqtD5dpn9C8',
+                        'category': 'Development',
+                        'videoCount': '1 Video',
+                        'students': 4,
+                        'duration': '1:00:15',
+                      },
+                      {
+                        'title': 'Learn JavaScript: Full Course for Beginners',
+                        'youtubeUrl': 'https://www.youtube.com/watch?v=PkZNo7MFNFg',
+                        'category': 'Development',
+                        'videoCount': '1 Video',
+                        'students': 4,
+                        'duration': '3:26:43',
+                      },
+                      {
+                        'title': 'Learn HTML: Full Tutorial for Beginners',
+                        'youtubeUrl': 'https://www.youtube.com/watch?v=pQN-pnXPaVg',
+                        'category': 'Development',
+                        'videoCount': '1 Video',
+                        'students': 8,
+                        'duration': '2:19:37',
+                      },
+                    ];
+                    return _buildCourseCard(
+                      context,
+                      courses[index]['title'],
+                      courses[index]['youtubeUrl'],
+                      courses[index]['category'],
+                      courses[index]['videoCount'],
+                      courses[index]['students'],
+                      courses[index]['duration'],
+                    );
+                  },
                 ),
               ),
             ],
@@ -108,7 +140,7 @@ class ProgrammingScreen extends StatelessWidget {
   Widget _buildCourseCard(BuildContext context, String title, String youtubeUrl,
       String category, String videoCount, int students, String duration) {
     // Get YouTube video ID from URL
-    String? videoId = YoutubePlayer.convertUrlToId(youtubeUrl);
+    String? videoId = extractVideoId(youtubeUrl); // Use the new method
 
     return Card(
       elevation: 2,
@@ -249,31 +281,6 @@ class ProgrammingScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => YoutubeVideoPlayer(videoId: videoId),
       ),
-    );
-  }
-
-  Widget buildCourseGrid(
-      BuildContext context, List<Map<String, dynamic>> courses) {
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // Two cards per row
-        crossAxisSpacing: 32,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.8, // Adjust ratio to fit layout properly
-      ),
-      itemCount: courses.length,
-      itemBuilder: (context, index) {
-        return _buildCourseCard(
-          context,
-          courses[index]['title'],
-          courses[index]['youtubeUrl'],
-          courses[index]['category'],
-          courses[index]['videoCount'],
-          courses[index]['students'],
-          courses[index]['duration'],
-        );
-      },
     );
   }
 }

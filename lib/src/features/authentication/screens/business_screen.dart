@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:study_stream/src/features/authentication/screens/upload_course_screen.dart'; // Import the new screen
 
 class BusinessScreen extends StatelessWidget {
   const BusinessScreen({Key? key}) : super(key: key);
+
+  // New method to extract video ID without extra parameters
+  String? extractVideoId(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return null;
+    if (uri.host != 'www.youtube.com' && uri.host != 'youtube.com') return null;
+    final videoId = uri.queryParameters['v'];
+    return videoId;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +60,15 @@ class BusinessScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // Navigate to the UploadCourseScreen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const UploadCourseScreen(),
+                        ),
+                      );
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
                       foregroundColor: const Color.fromARGB(255, 211, 47, 47),
@@ -65,37 +83,57 @@ class BusinessScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Expanded(
-                child: GridView.count(
-                  crossAxisCount: 3,
-                  childAspectRatio: 0.9,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
-                  children: [
-                    _buildCourseCard(
-                        context,
-                        'think like a business analyst in tech (3 core skills + solving case study)',
-                        'https://www.youtube.com/watch?v=9CGYmmHZq9Q&pp=ygURYnVzaW5lc3MgYW5hbHlzaXM%3D',
-                        'Analyst',
-                        '1 Video',
-                        4,
-                        '12:19'),
-                    _buildCourseCard(
-                        context,
-                        'What Is Business Analytics? | Business: Explained',
-                        'https://www.youtube.com/watch?v=9fFQA-JOXA0&pp=ygURYnVzaW5lc3MgYW5hbHlzaXPSBwkJvwCDtaTen9Q%3D',
-                        'Business Analysis',
-                        '1 Video',
-                        4,
-                        '2:18'),
-                    _buildCourseCard(
-                        context,
-                        'The Basics of Business Education - What Business Students Should Study',
-                        'https://www.youtube.com/watch?v=69dLyztc-As&pp=ygUOYnVzaW5lc3Mgc3R1ZHk%3D',
-                        'Marketing',
-                        '1 Video',
-                        8,
-                        '57:06'),
-                  ],
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.3,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
+                  ),
+                  itemCount: 3,
+                  itemBuilder: (context, index) {
+                    final List<Map<String, dynamic>> courses = [
+                      {
+                        'title':
+                            'think like a business analyst in tech (3 core skills + solving case study)',
+                        'youtubeUrl':
+                            'https://www.youtube.com/watch?v=9CGYmmHZq9Q',
+                        'category': 'Analyst',
+                        'videoCount': '1 Video',
+                        'students': 4,
+                        'duration': '12:19',
+                      },
+                      {
+                        'title':
+                            'What Is Business Analytics? | Business: Explained',
+                        'youtubeUrl':
+                            'https://www.youtube.com/watch?v=9fFQA-JOXA0',
+                        'category': 'Business Analysis',
+                        'videoCount': '1 Video',
+                        'students': 4,
+                        'duration': '2:18',
+                      },
+                      {
+                        'title':
+                            'The Basics of Business Education - What Business Students Should Study',
+                        'youtubeUrl':
+                            'https://www.youtube.com/watch?v=69dLyztc-As',
+                        'category': 'Marketing',
+                        'videoCount': '1 Video',
+                        'students': 8,
+                        'duration': '57:06',
+                      },
+                    ];
+                    return _buildCourseCard(
+                      context,
+                      courses[index]['title'],
+                      courses[index]['youtubeUrl'],
+                      courses[index]['category'],
+                      courses[index]['videoCount'],
+                      courses[index]['students'],
+                      courses[index]['duration'],
+                    );
+                  },
                 ),
               ),
             ],
@@ -108,7 +146,7 @@ class BusinessScreen extends StatelessWidget {
   Widget _buildCourseCard(BuildContext context, String title, String youtubeUrl,
       String category, String videoCount, int students, String duration) {
     // Get YouTube video ID from URL
-    String? videoId = YoutubePlayer.convertUrlToId(youtubeUrl);
+    String? videoId = extractVideoId(youtubeUrl); // Use the new method
 
     return Card(
       elevation: 2,
@@ -249,31 +287,6 @@ class BusinessScreen extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) => YoutubeVideoPlayer(videoId: videoId),
       ),
-    );
-  }
-
-  Widget buildCourseGrid(
-      BuildContext context, List<Map<String, dynamic>> courses) {
-    return GridView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // Two cards per row
-        crossAxisSpacing: 32,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.8, // Adjust ratio to fit layout properly
-      ),
-      itemCount: courses.length,
-      itemBuilder: (context, index) {
-        return _buildCourseCard(
-          context,
-          courses[index]['title'],
-          courses[index]['youtubeUrl'],
-          courses[index]['category'],
-          courses[index]['videoCount'],
-          courses[index]['students'],
-          courses[index]['duration'],
-        );
-      },
     );
   }
 }
