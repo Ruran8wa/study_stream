@@ -139,10 +139,8 @@ class ProgrammingScreen extends StatelessWidget {
                       topRight: Radius.circular(8),
                     ),
                     onTap: () {
-                      if (videoId != null) {
-                        _openYoutubeVideo(context, videoId);
-                      }
-                    },
+                      _openYoutubeVideo(context, videoId);
+                                        },
                     child: const Center(
                       child: CircleAvatar(
                         backgroundColor: Colors.red,
