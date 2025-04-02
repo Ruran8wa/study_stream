@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class CoursesScreen extends StatelessWidget {
   const CoursesScreen({Key? key}) : super(key: key);
@@ -71,23 +72,29 @@ class CoursesScreen extends StatelessWidget {
                   mainAxisSpacing: 20,
                   children: [
                     _buildCourseCard(
+                        context,
                         'Python for Beginners - Learn Python in 1 Hour',
-                        'assets/images/instructor.webp',
+                        'https://www.youtube.com/watch?v=kqtD5dpn9C8',
                         'Development',
                         '1 Video',
-                        4),
+                        4,
+                        '1:00:15'),
                     _buildCourseCard(
-                        'Learn JavaScript: Learn JavaScript - Full Course for Beginners',
-                        'assets/images/instructor.webp',
+                        context,
+                        'Learn JavaScript: Full Course for Beginners',
+                        'https://www.youtube.com/watch?v=PkZNo7MFNFg',
                         'Development',
                         '1 Video',
-                        4),
+                        4,
+                        '3:26:43'),
                     _buildCourseCard(
-                        'Learn Html: Full Tutorial for Beginners',
-                        'assets/images/instructor.webp',
+                        context,
+                        'Learn HTML: Full Tutorial for Beginners',
+                        'https://www.youtube.com/watch?v=pQN-pnXPaVg',
                         'Development',
                         '1 Video',
-                        8),
+                        8,
+                        '2:19:37'),
                   ],
                 ),
               ),
@@ -98,8 +105,11 @@ class CoursesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildCourseCard(String title, String imageUrl, String category,
-      String videoCount, int students) {
+  Widget _buildCourseCard(BuildContext context, String title, String youtubeUrl,
+      String category, String videoCount, int students, String duration) {
+    // Get YouTube video ID from URL
+    String? videoId = YoutubePlayer.convertUrlToId(youtubeUrl);
+
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -115,38 +125,34 @@ class CoursesScreen extends StatelessWidget {
                   topLeft: Radius.circular(8),
                   topRight: Radius.circular(8),
                 ),
-                child: Image.asset(
-                  imageUrl,
+                child: YouTubeThumbnail(
+                  videoId: videoId ?? '',
                   height: 150,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 150,
-                      width: double.infinity,
-                      color: Colors.grey[300],
-                      child: const Icon(
-                        Icons.broken_image,
-                        size: 50,
-                        color: Colors.grey,
-                      ),
-                    );
-                  },
                 ),
               ),
-              const Positioned(
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: CircleAvatar(
-                    backgroundColor: Colors.red,
-                    radius: 25,
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: Colors.white,
-                      size: 30,
+              Positioned.fill(
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                    ),
+                    onTap: () {
+                      if (videoId != null) {
+                        _openYoutubeVideo(context, videoId);
+                      }
+                    },
+                    child: const Center(
+                      child: CircleAvatar(
+                        backgroundColor: Colors.red,
+                        radius: 25,
+                        child: Icon(
+                          Icons.play_arrow,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -161,6 +167,29 @@ class CoursesScreen extends StatelessWidget {
                     radius: 16,
                     backgroundImage:
                         AssetImage('assets/images/instructor.webp'),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 10,
+                left: 10,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: const BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.timer, color: Colors.white, size: 14),
+                      const SizedBox(width: 4),
+                      Text(
+                        duration,
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 12),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -214,7 +243,17 @@ class CoursesScreen extends StatelessWidget {
     );
   }
 
-  Widget buildCourseGrid(List<Map<String, dynamic>> courses) {
+  void _openYoutubeVideo(BuildContext context, String videoId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => YoutubeVideoPlayer(videoId: videoId),
+      ),
+    );
+  }
+
+  Widget buildCourseGrid(
+      BuildContext context, List<Map<String, dynamic>> courses) {
     return GridView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -226,13 +265,156 @@ class CoursesScreen extends StatelessWidget {
       itemCount: courses.length,
       itemBuilder: (context, index) {
         return _buildCourseCard(
+          context,
           courses[index]['title'],
-          courses[index]['imageUrl'],
+          courses[index]['youtubeUrl'],
           courses[index]['category'],
           courses[index]['videoCount'],
           courses[index]['students'],
+          courses[index]['duration'],
         );
       },
+    );
+  }
+}
+
+// Widget to display YouTube thumbnails
+class YouTubeThumbnail extends StatelessWidget {
+  final String videoId;
+  final double height;
+
+  const YouTubeThumbnail({
+    Key? key,
+    required this.videoId,
+    required this.height,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (videoId.isEmpty) {
+      return Container(
+        height: height,
+        width: double.infinity,
+        color: Colors.grey[300],
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.video_library,
+              size: 40,
+              color: Colors.grey,
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Video not available',
+              style: TextStyle(color: Colors.grey),
+            ),
+          ],
+        ),
+      );
+    }
+
+    // YouTube thumbnail URL format
+    String thumbnailUrl = 'https://img.youtube.com/vi/$videoId/mqdefault.jpg';
+
+    return Image.network(
+      thumbnailUrl,
+      height: height,
+      width: double.infinity,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          height: height,
+          width: double.infinity,
+          color: Colors.grey[300],
+          child: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.broken_image,
+                size: 40,
+                color: Colors.grey,
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Thumbnail not available',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+        );
+      },
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Container(
+          height: height,
+          width: double.infinity,
+          color: Colors.black12,
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      },
+    );
+  }
+}
+
+// Screen to play YouTube videos
+class YoutubeVideoPlayer extends StatefulWidget {
+  final String videoId;
+
+  const YoutubeVideoPlayer({Key? key, required this.videoId}) : super(key: key);
+
+  @override
+  State<YoutubeVideoPlayer> createState() => _YoutubeVideoPlayerState();
+}
+
+class _YoutubeVideoPlayerState extends State<YoutubeVideoPlayer> {
+  late YoutubePlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = YoutubePlayerController(
+      initialVideoId: widget.videoId,
+      flags: const YoutubePlayerFlags(
+        autoPlay: true,
+        mute: false,
+        enableCaption: true,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title:
+            const Text('Course Video', style: TextStyle(color: Colors.white)),
+      ),
+      body: Center(
+        child: YoutubePlayer(
+          controller: _controller,
+          showVideoProgressIndicator: true,
+          progressIndicatorColor: Colors.red,
+          progressColors: const ProgressBarColors(
+            playedColor: Colors.red,
+            handleColor: Colors.redAccent,
+          ),
+          onReady: () {
+            _controller.addListener(() {});
+          },
+        ),
+      ),
     );
   }
 }

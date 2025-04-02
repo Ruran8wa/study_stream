@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../services/auth_service.dart'; // Corrected import path
 import 'package:study_stream/src/features/authentication/screens/login_screen.dart'; // Corrected import path
-import 'home_screen.dart';
+import 'package:study_stream/src/features/authentication/screens/home_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -17,7 +17,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _agreedToTerms = false;
-  final AuthService _authService = AuthService(); // Create an instance of AuthService
+  final AuthService _authService =
+      AuthService(); // Create an instance of AuthService
 
   @override
   void dispose() {
@@ -42,7 +43,8 @@ class _SignupScreenState extends State<SignupScreen> {
         if (mounted) {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => const LoginScreen(), // Navigate to LoginScreen
+              builder: (context) =>
+                  const LoginScreen(), // Navigate to LoginScreen
             ),
           );
         }
@@ -51,7 +53,8 @@ class _SignupScreenState extends State<SignupScreen> {
         print('Error during sign-up: $e');
         if (mounted) {
           String errorMessage = 'Failed to sign up.';
-          if (e is Exception && e.toString().contains('The email address is already in use')) {
+          if (e is Exception &&
+              e.toString().contains('The email address is already in use')) {
             errorMessage = 'This email is already in use.';
           }
           ScaffoldMessenger.of(context).showSnackBar(
@@ -354,7 +357,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
                       // Sign Up Button
                       ElevatedButton(
-                        onPressed: _agreedToTerms ? _signUp : null, // Call _signUp here
+                        onPressed: _agreedToTerms
+                            ? _signUp
+                            : null, // Call _signUp here
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red,
                           foregroundColor: Colors.white,
