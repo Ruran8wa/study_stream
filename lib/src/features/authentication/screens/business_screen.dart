@@ -139,8 +139,10 @@ class BusinessScreen extends StatelessWidget {
                       topRight: Radius.circular(8),
                     ),
                     onTap: () {
-                      _openYoutubeVideo(context, videoId);
-                                        },
+                      if (videoId != null) {
+                        _openYoutubeVideo(context, videoId);
+                      }
+                    },
                     child: const Center(
                       child: CircleAvatar(
                         backgroundColor: Colors.red,
