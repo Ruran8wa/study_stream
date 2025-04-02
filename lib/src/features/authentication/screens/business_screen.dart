@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
-class CoursesScreen extends StatelessWidget {
-  const CoursesScreen({Key? key}) : super(key: key);
+class BusinessScreen extends StatelessWidget {
+  const BusinessScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class CoursesScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Development',
+                'Business',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -73,28 +73,28 @@ class CoursesScreen extends StatelessWidget {
                   children: [
                     _buildCourseCard(
                         context,
-                        'Python for Beginners - Learn Python in 1 Hour',
-                        'https://www.youtube.com/watch?v=kqtD5dpn9C8',
-                        'Development',
+                        'think like a business analyst in tech (3 core skills + solving case study)',
+                        'https://www.youtube.com/watch?v=9CGYmmHZq9Q&pp=ygURYnVzaW5lc3MgYW5hbHlzaXM%3D',
+                        'Analyst',
                         '1 Video',
                         4,
-                        '1:00:15'),
+                        '12:19'),
                     _buildCourseCard(
                         context,
-                        'Learn JavaScript: Full Course for Beginners',
-                        'https://www.youtube.com/watch?v=PkZNo7MFNFg',
-                        'Development',
+                        'What Is Business Analytics? | Business: Explained',
+                        'https://www.youtube.com/watch?v=9fFQA-JOXA0&pp=ygURYnVzaW5lc3MgYW5hbHlzaXPSBwkJvwCDtaTen9Q%3D',
+                        'Business Analysis',
                         '1 Video',
                         4,
-                        '3:26:43'),
+                        '2:18'),
                     _buildCourseCard(
                         context,
-                        'Learn HTML: Full Tutorial for Beginners',
-                        'https://www.youtube.com/watch?v=pQN-pnXPaVg',
-                        'Development',
+                        'The Basics of Business Education - What Business Students Should Study',
+                        'https://www.youtube.com/watch?v=69dLyztc-As&pp=ygUOYnVzaW5lc3Mgc3R1ZHk%3D',
+                        'Marketing',
                         '1 Video',
                         8,
-                        '2:19:37'),
+                        '57:06'),
                   ],
                 ),
               ),

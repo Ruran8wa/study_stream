@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:study_stream/src/features/authentication/screens/courses.dart';
+import 'package:study_stream/src/features/authentication/screens/programming_screen.dart';
+import 'package:study_stream/src/features/authentication/screens/business_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -197,38 +198,48 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildCategoryButtons(BuildContext context) {
-    return GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const CoursesScreen()),
-          );
-        },
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            _buildCategoryButton(
-              color: Colors.blue,
-              icon: Icons.medical_services,
-              label: 'Dental',
-            ),
-            _buildCategoryButton(
-              color: Colors.green,
-              icon: Icons.favorite,
-              label: 'Cardio',
-            ),
-            _buildCategoryButton(
-              color: Colors.orange,
-              icon: Icons.remove_red_eye,
-              label: 'Optical',
-            ),
-            _buildCategoryButton(
-              color: Colors.red,
-              icon: Icons.accessibility_new,
-              label: 'Ortho',
-            ),
-          ],
-        ));
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const ProgrammingScreen()),
+            );
+          },
+          child: _buildCategoryButton(
+            color: Colors.green,
+            icon: Icons.code,
+            label: 'Programming',
+          ),
+        ),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const BusinessScreen()),
+            );
+          },
+          child: _buildCategoryButton(
+            color: Colors.blue,
+            icon: Icons.monetization_on,
+            label: 'Business',
+          ),
+        ),
+        _buildCategoryButton(
+          color: Colors.orange,
+          icon: Icons.add_chart,
+          label: 'Statistics',
+        ),
+        _buildCategoryButton(
+          color: Colors.red,
+          icon: Icons.timer,
+          label: 'Time Management',
+        ),
+      ],
+    );
   }
 
   Widget _buildCategoryButton({
@@ -293,17 +304,17 @@ class HomeScreen extends StatelessWidget {
       children: [
         Expanded(
           child: _buildPopularTutorialCard(
-            'assets/images/doctor1.jpeg',
-            'Dr. Fillerup Grab',
-            'Medicine Specialist',
+            'assets/images/mosh.jpeg',
+            'Mosh',
+            'Programming Trainer',
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
           child: _buildPopularTutorialCard(
-            'assets/images/doctor2.jpeg',
-            'Dr. Blessing',
-            'Dentist Specialist',
+            'assets/images/KyleCook.webp',
+            'Kyle',
+            'Web simplified',
           ),
         ),
       ],
