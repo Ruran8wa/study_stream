@@ -139,7 +139,7 @@ class BusinessScreen extends StatelessWidget {
                       topRight: Radius.circular(8),
                     ),
                     onTap: () {
-                      _openYoutubeVideo(context, videoId!);
+                      _openYoutubeVideo(context, videoId);
                                         },
                     child: const Center(
                       child: CircleAvatar(
