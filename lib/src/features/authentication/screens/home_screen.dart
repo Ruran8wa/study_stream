@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:study_stream/src/features/authentication/screens/programming_screen.dart';
 import 'package:study_stream/src/features/authentication/screens/business_screen.dart';
 import 'package:study_stream/src/features/authentication/screens/statistics_screen.dart';
