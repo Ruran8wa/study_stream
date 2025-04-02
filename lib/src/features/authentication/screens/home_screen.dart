@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:study_stream/src/features/authentication/screens/programming_screen.dart';
 import 'package:study_stream/src/features/authentication/screens/business_screen.dart';
+import 'package:study_stream/src/features/authentication/screens/statistics_screen.dart';
+import 'package:study_stream/src/features/authentication/screens/time_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -228,15 +230,31 @@ class HomeScreen extends StatelessWidget {
             label: 'Business',
           ),
         ),
-        _buildCategoryButton(
-          color: Colors.orange,
-          icon: Icons.add_chart,
-          label: 'Statistics',
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const StatisticsScreen()),
+            );
+          },
+          child: _buildCategoryButton(
+            color: Colors.orange,
+            icon: Icons.add_chart,
+            label: 'Statistics',
+          ),
         ),
-        _buildCategoryButton(
-          color: Colors.red,
-          icon: Icons.timer,
-          label: 'Time Management',
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const TimeScreen()),
+            );
+          },
+          child: _buildCategoryButton(
+            color: Colors.red,
+            icon: Icons.timer,
+            label: 'Time Management',
+          ),
         ),
       ],
     );
