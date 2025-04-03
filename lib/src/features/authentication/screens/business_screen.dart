@@ -84,11 +84,12 @@ class BusinessScreen extends StatelessWidget {
               const SizedBox(height: 20),
               Expanded(
                 child: GridView.builder(
+                  padding: const EdgeInsets.only(bottom: 16),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 1.3,
-                    crossAxisSpacing: 20,
-                    mainAxisSpacing: 20,
+                    childAspectRatio: 0.85,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
                   ),
                   itemCount: 3,
                   itemBuilder: (context, index) {
@@ -153,6 +154,7 @@ class BusinessScreen extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
+      clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -165,7 +167,7 @@ class BusinessScreen extends StatelessWidget {
                 ),
                 child: YouTubeThumbnail(
                   videoId: videoId ?? '',
-                  height: 150,
+                  height: 100,
                 ),
               ),
               Positioned.fill(

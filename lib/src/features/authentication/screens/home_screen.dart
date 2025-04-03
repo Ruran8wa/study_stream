@@ -5,6 +5,10 @@ import 'package:study_stream/src/features/authentication/screens/programming_scr
 import 'package:study_stream/src/features/authentication/screens/business_screen.dart';
 import 'package:study_stream/src/features/authentication/screens/statistics_screen.dart';
 import 'package:study_stream/src/features/authentication/screens/time_screen.dart';
+import 'package:study_stream/src/features/authentication/screens/login_screen.dart';
+// Firebase imports
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // In case username is stored in Firestore
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -31,11 +35,65 @@ class HomeScreenState extends State<HomeScreen> {
 
   List<Map<String, String>> _filteredVideos = [];
   final TextEditingController _searchController = TextEditingController();
+  String _userName = "User"; // Default name
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   void initState() {
     super.initState();
     _filteredVideos = List.from(_videos);
+    _loadUserName();
+  }
+
+  // Load the current user's name from Firebase
+  Future<void> _loadUserName() async {
+    try {
+      User? currentUser = _auth.currentUser;
+
+      if (currentUser != null) {
+        // Option 1: Get display name directly from Firebase Auth
+        if (currentUser.displayName != null &&
+            currentUser.displayName!.isNotEmpty) {
+          setState(() {
+            _userName = currentUser.displayName!;
+          });
+        }
+        // Option 2: If display name is not available in Firebase Auth, try to get from Firestore
+        else {
+          try {
+            // Assuming you have a 'users' collection with documents named by user IDs
+            DocumentSnapshot userDoc = await FirebaseFirestore.instance
+                .collection('users')
+                .doc(currentUser.uid)
+                .get();
+
+            if (userDoc.exists && userDoc.data() != null) {
+              var userData = userDoc.data() as Map<String, dynamic>;
+              // Update the variable based on your Firestore field name (might be 'name', 'username', etc.)
+              if (userData.containsKey('name') && userData['name'] != null) {
+                setState(() {
+                  _userName = userData['name'];
+                });
+              } else if (userData.containsKey('username') &&
+                  userData['username'] != null) {
+                setState(() {
+                  _userName = userData['username'];
+                });
+              } else if (userData.containsKey('displayName') &&
+                  userData['displayName'] != null) {
+                setState(() {
+                  _userName = userData['displayName'];
+                });
+              }
+            }
+          } catch (e) {
+            print('Error fetching user data from Firestore: $e');
+          }
+        }
+      }
+    } catch (e) {
+      print('Error loading user name: $e');
+    }
   }
 
   void _searchVideos(String query) {
@@ -52,16 +110,24 @@ class HomeScreenState extends State<HomeScreen> {
     _searchVideos('');
   }
 
-  // Fetching YouTube video thumbnail
   Future<String> _getVideoThumbnail(String url) async {
     try {
-      var yt = YoutubeExplode();
-      var videoId = url.split('v=')[1].split('&')[0]; // Extract video ID
-      var video = await yt.videos.get(VideoId(videoId)); // Get video details
-      return video.thumbnails.highResUrl; // Return the high-res thumbnail
+      // Extract video ID from YouTube URL
+      RegExp regExp = RegExp(
+        r'(?:youtube\.com\/(?:[^\/\n\s]+\/\s*[^\/\n\s]+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})',
+      );
+      Match? match = regExp.firstMatch(url);
+
+      if (match != null && match.groupCount >= 1) {
+        String videoId = match.group(1)!;
+        // Use high quality thumbnail directly
+        return 'https://img.youtube.com/vi/$videoId/hqdefault.jpg';
+      }
+
+      return 'https://via.placeholder.com/120x90.png?text=Thumbnail';
     } catch (e) {
       print('Error fetching thumbnail: $e');
-      return ''; // Return empty string in case of error
+      return 'https://via.placeholder.com/120x90.png?text=Error';
     }
   }
 
@@ -69,6 +135,56 @@ class HomeScreenState extends State<HomeScreen> {
     final Uri _url = Uri.parse(url);
     if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch $_url');
+    }
+  }
+
+  // Show logout confirmation dialog
+  Future<void> _showLogoutConfirmation() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Logout'),
+          content: const SingleChildScrollView(
+            child: Text('Are you sure you want to logout?'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Logout'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _logout();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Handle logout logic
+  Future<void> _logout() async {
+    try {
+      await _auth.signOut();
+
+      // Navigate to login screen and remove all previous routes
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (Route<dynamic> route) => false,
+      );
+    } catch (e) {
+      print('Error during logout: $e');
+      // Show error message to user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to logout: $e')),
+      );
     }
   }
 
@@ -114,21 +230,21 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHeader() {
-    return const Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hi Handwerker!',
-              style: TextStyle(
+              'Hi $_userName!',
+              style: const TextStyle(
                 fontSize: 16,
                 color: Colors.white,
               ),
             ),
-            SizedBox(height: 4),
-            Text(
+            const SizedBox(height: 4),
+            const Text(
               'Find Your Tutorial',
               style: TextStyle(
                 fontSize: 24,
@@ -138,11 +254,18 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        CircleAvatar(
-          radius: 24,
-          backgroundImage: NetworkImage(
-            'https://randomuser.me/api/portraits/women/mosh.jpeg',
+        // Logout button
+        ElevatedButton.icon(
+          icon: const Icon(Icons.logout),
+          label: const Text('Logout'),
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.redAccent,
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
           ),
+          onPressed: _showLogoutConfirmation,
         ),
       ],
     );
