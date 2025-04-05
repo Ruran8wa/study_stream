@@ -5,21 +5,17 @@ import 'firebase_options.dart';
 import 'src/features/authentication/screens/welcome_screen.dart';
 
 void main() async {
-  // Ensure Flutter is initialized.
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase.
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Set preferred device orientation.
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
 
-  // Run the app.
   runApp(const StudyStreamApp());
 }
 
